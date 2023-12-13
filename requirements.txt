@@ -6,7 +6,6 @@ certifi==2023.7.22
 charset-normalizer==3.3.1
 click==8.1.7
 cmake==3.21.3
-dlib==19.22.0
 gitdb==4.0.11
 GitPython==3.1.40
 idna==3.4
@@ -51,3 +50,4 @@ validators==0.22.0
 watchdog==3.0.0
 zipp==3.17.0
 moviepy==1.0.2
+dlib==19.22.0
