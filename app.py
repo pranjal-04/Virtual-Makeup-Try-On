@@ -2,31 +2,29 @@ import streamlit as st
 import cv2
 import numpy as np
 import dlib
-# Set the title and page layout
 from PIL import Image
 
 def apply_google1(image):
-    st.write("Google Apply Function 1 Executed!")
+    st.write("Sunglasses Applied!")
     goggle_name="goggle1.jpg"
     sunglasses(image,goggle_name)
 
 def apply_google2(image):
-    st.write("Google Apply Function 2 Executed!")
+    st.write("Sunglasses Applied!")
     goggle_name="goggle3.jpg"
     sunglasses(image,goggle_name)
 
 def apply_google3(image):
-    st.write("Google Apply Function 3 Executed!")
+    st.write("Sunglasses Applied!")
     goggle_name="goggle4.jpg"
     sunglasses(image,goggle_name)
 
 def apply_google4(image):
-    st.write("Google Apply Function 4 Executed!")
+    st.write("Sunglasses Applied!")
     goggle_name="goggle2.jpg"
     sunglasses(image,goggle_name)
 
 def sunglasses(image,goggle_name):
-    
     finalimg = image.copy()
     # Load the eye cascade classifier
     cascade_path = "frontalEyes35x16.xml"
@@ -42,8 +40,7 @@ def sunglasses(image,goggle_name):
 
         # Draw a rectangle around the detected eye
         img = cv2.rectangle(image, (eye_x, eye_y), (eye_x + eye_w, eye_y + eye_h), (0, 255, 255), 2)
-        print("Eye detected:")
-       
+        
         # Load and resize the glasses filter image
         glasses_filter = cv2.imread(goggle_name, cv2.IMREAD_UNCHANGED)
         glasses_filter_resized = cv2.resize(glasses_filter, (eye_w + 50, eye_h + 55))
@@ -58,14 +55,9 @@ def sunglasses(image,goggle_name):
 
 def lipstick(image, color):
     # Load the Haar Cascade classifier for face detection
-   
-
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
     finalimg = image.copy()
-
     imgGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
     # Detect faces in the image
     faces = face_cascade.detectMultiScale(imgGray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
@@ -86,7 +78,6 @@ def lipstick(image, color):
             y = landmarks.part(n).y
             landmarkspoints.append([x, y])
 
-    #st.image(finalimgout, caption="Your Makeup Results", use_column_width=400, width=300)      
     #code for lips detection, creating a mask, and changing lip color
     landmarkspoints = np.array(landmarkspoints)
     lipmask = np.zeros_like(finalimg)  # Use 'finalimg' instead of 'image'
@@ -97,21 +88,17 @@ def lipstick(image, color):
     b = color[0][0][0]
     g = color[0][0][1]
     r = color[0][0][2]
-    print(b,g,r)
+    
     lipimgcolor[:] = b, g, r
 
     lipimgcolor = cv2.bitwise_and(lipimg, lipimgcolor)
-
     lipimgcolor = cv2.GaussianBlur(lipimgcolor, (7, 7), 3)
     finalimgout = cv2.addWeighted(finalimg, 1, lipimgcolor, 0.7, 0)
 
     st.image(finalimgout, caption="Your Makeup Results", use_column_width=400, width=300)
 
 def eyeLenses(img):
-    #img = cv2.imread("girl2.jpg")
-
     ori = img.copy()
-
     grayimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     detector = dlib.get_frontal_face_detector()
 
@@ -161,14 +148,9 @@ def eyeLenses(img):
         eyecolor[:,:] = b, g, r
        
         eyecolormask = cv2.bitwise_and(mask, eyecolor)
-    
         eyecolormask = cv2.GaussianBlur(eyecolormask, (7, 7), 10)
-        
-
         finalimg = cv2.addWeighted(ori, 1, eyecolormask, 0.4, 0)
         st.image(finalimg, caption="Your Makeup Results", use_column_width=400, width=300)
-
-
 
 st.set_page_config(
     page_title="Design Virtual Makeup",
@@ -246,16 +228,17 @@ def eyeLiner(image):
 
     # Custom CSS for setting the background image
 st.title("Makeup Magic - Virtual Makeup Try-On")
+
 # Create a dropdown menu for selecting makeup options
 selected_option = st.sidebar.selectbox("Select Makeup Option:", ["Lipsticks", "Eyelenses", "Goggles", "Eyeliners"])
 
 if selected_option == "Lipsticks":
-    # Create a Streamlit sidebar with three sliders for RGB values
+    #Streamlit sidebar with three sliders for RGB values
     red_value = st.sidebar.slider("Red", 0, 255, 127)
     green_value = st.sidebar.slider("Green", 0, 255, 127)
     blue_value = st.sidebar.slider("Blue", 0, 255, 127)
 
-    # Create an image based on the selected RGB values
+    #Image based on the selected RGB values
     color_image = np.zeros((100, 100, 3), dtype=np.uint8)
     color_image[:, :, 0] = red_value
     color_image[:, :, 1] = green_value
@@ -263,30 +246,21 @@ if selected_option == "Lipsticks":
 
     # Display the generated image in the Streamlit sidebar
     st.sidebar.image(color_image, caption="Generated Image", use_column_width=True)
-
-    # Optionally, display the RGB values below the image
     st.sidebar.write(f"Red: {red_value}, Green: {green_value}, Blue: {blue_value}")
 
     # Upload User's Photo
     st.sidebar.title("Upload Your Photo")
     user_image = st.sidebar.file_uploader("Upload Your Photo", type=["jpg", "png", "jpeg"])
 
-    #if user_image is not None:
-     #   st.sidebar.image(user_image, caption="Uploaded Photo", use_column_width=True)
-
     if user_image is not None:
         # Open the uploaded image using PIL
         pil_image = Image.open(user_image)
         # Convert the PIL image to a NumPy array
         numpy_image = np.array(pil_image)
-        print("type of image")
-        print(type(user_image))
-        
         lipstick(numpy_image,color_image)
 
 elif selected_option == "Eyelenses":
     st.subheader("Eye lenses")
-    # Upload User's Photo
     st.sidebar.title("Upload Your Photo")
     user_image = st.sidebar.file_uploader("Upload Your Photo", type=["jpg", "png", "jpeg"])
     
@@ -302,29 +276,30 @@ elif selected_option == "Goggles":
     if user_image is not None:
        pil_image = Image.open(user_image)
        numpy_image = np.array(pil_image)
-    #Display three images in a row
+    
+    #Display images in a row
     col1, col2, col3 = st.columns(3)
 
     with col1:
         st.image("goggle1.jpg", caption="Image 1", use_column_width=True)
-        if st.button("Apply Google 1"):
+        if st.button("Apply Goggle 1"):
                apply_google1(numpy_image)
 
     with col2:
         st.image("goggle3.jpg", caption="Image 2", use_column_width=True)
-        if st.button("Apply Google 2"):
+        if st.button("Apply Goggle 2"):
             if user_image is not None:
                apply_google2(numpy_image)
 
     with col3:
         st.image("image1.jpg", caption="Image 3", use_column_width=True)
-        if st.button("Apply Google 3"):
+        if st.button("Apply Goggle 3"):
             if user_image is not None:
                apply_google3(numpy_image)
     
     with col1:
         st.image("goggle2.jpg", caption="Image 1", use_column_width=True)
-        if st.button("Apply Google 4"):
+        if st.button("Apply Goggle 4"):
                apply_google4(numpy_image)
 
 elif selected_option == "Eyeliners":
@@ -333,11 +308,5 @@ elif selected_option == "Eyeliners":
 
     if uploaded_file is not None:
         image = cv2.imdecode(np.fromstring(uploaded_file.read(), np.uint8), 1)
-        #st.image(image, channels="BGR", caption="Uploaded Image", use_column_width=True)
         eyeLiner(image)
     
-
-
-
-
-
